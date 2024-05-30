@@ -14,10 +14,14 @@ export const Balance = () => {
     return acc; // For any other types of transactions
   }, 0).toFixed(2);
 
+  const balanceStyle = {
+    color: total < 0 ? 'red' : 'black'
+  };
+
   return (
     <>
       <h4>Your Balance</h4>
-      <h1>₱{numberWithCommas(total)}</h1>
+      <h1 style={balanceStyle}>₱{numberWithCommas(total)}</h1>
     </>
   );
 };
