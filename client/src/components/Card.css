@@ -2,10 +2,13 @@
   background-color: #FDA60E;
   border-radius: 30px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-  padding: 45px;
+  padding: 40px;
   margin: 10px 10px 40px;
   max-width: 900px;
   width: 600px;
+  position: relative; 
+  top: 80px;
+  height: fit-content;
 }
 
 .error-message {

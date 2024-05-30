@@ -13,7 +13,7 @@ export const IncomeExpenses = () => {
 
   // Calculate expenses (including use savings)
   const expenses = Math.abs(transactions
-    .filter(transaction => transaction.type === 'expense' || transaction.type === 'use savings')
+    .filter(transaction => transaction.type === 'expense')
     .reduce((acc, transaction) => acc + transaction.amount, 0))
     .toFixed(2);
 
@@ -27,15 +27,15 @@ export const IncomeExpenses = () => {
     <div className="inc-exp-container">
       <div>
         <h4>Income</h4>
-        <p className="money plus">${numberWithCommas(income)}</p>
+        <p className="money plus">₱{numberWithCommas(income)}</p>
       </div>
       <div>
         <h4>Expense</h4>
-        <p className="money minus">${numberWithCommas(expenses)}</p>
+        <p className="money minus">₱{numberWithCommas(expenses)}</p>
       </div>
       <div>
         <h4>Savings</h4>
-        <p className="money savings">${numberWithCommas(savings)}</p>
+        <p className="money savings">₱{numberWithCommas(savings)}</p>
       </div>
     </div>
   );

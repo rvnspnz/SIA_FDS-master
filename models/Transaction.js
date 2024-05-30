@@ -12,7 +12,7 @@ const TransactionSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['income', 'expense', 'savings', 'use savings'],
+    enum: ['income', 'expense', 'savings'],
     required: [true, 'Please specify the type of transaction']
   },
   createdAt: {

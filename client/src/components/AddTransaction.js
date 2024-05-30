@@ -6,29 +6,59 @@ export const AddTransaction = () => {
   const [amount, setAmount] = useState(0);
   const [transactionType, setTransactionType] = useState('income');
   const [savings, setSavings] = useState(0);
+  const [balance, setBalance] = useState(0);
 
   const { addTransaction, transactions, error, success, clearMessages } = useContext(GlobalContext);
 
   useEffect(() => {
+    const totalIncome = transactions
+      .filter(transaction => transaction.type === 'income')
+      .reduce((acc, transaction) => acc + transaction.amount, 0);
+    const totalExpenses = transactions
+      .filter(transaction => transaction.type === 'expense' || transaction.type === 'use savings')
+      .reduce((acc, transaction) => acc + transaction.amount, 0);
     const savingsTransaction = transactions.find(transaction => transaction.type === 'savings');
-    if (savingsTransaction) {
-      setSavings(savingsTransaction.amount);
-    }
+
+    setSavings(savingsTransaction ? savingsTransaction.amount : 0);
+    setBalance(totalIncome + totalExpenses); // totalExpenses are negative, so we add
   }, [transactions]);
 
   const onSubmit = e => {
     e.preventDefault();
 
-    if (transactionType === 'use savings' && Math.abs(amount) > savings) {
-      alert('Amount exceeds available savings');
-      return;
-    }
-
+    const isExpense = transactionType === 'expense';
+    const isSavings = transactionType === 'savings';
+    const isUseSavings = transactionType === 'use savings';
     const newTransaction = {
       text,
-      amount: transactionType === 'expense' || transactionType === 'use savings' ? -Math.abs(amount) : Math.abs(amount),
+      amount: (isExpense || isUseSavings) ? -Math.abs(amount) : Math.abs(amount),
       type: transactionType
     };
+
+    // Check if balance will be negative for expenses and savings
+    if ((isExpense && (balance - Math.abs(amount)) < 0) || (isSavings && (balance - Math.abs(amount)) < 0)) {
+      const confirmMessage = "Your balance will be negative. Do you want to continue?";
+      if (!window.confirm(confirmMessage)) {
+        alert('Transaction canceled.');
+        return;
+      }
+    }
+
+    // Handle use savings by creating an expense transaction
+    if (isUseSavings) {
+      addTransaction({
+        text: `Used savings for ${text}`,
+        amount: -Math.abs(amount),
+        type: 'expense'
+      }).then(() => {
+        setText('');
+        setAmount(0);
+        setTransactionType('income');
+        setTimeout(() => clearMessages(), 5000);
+      }).catch(() => {
+        setTimeout(() => clearMessages(), 5000);
+      });
+    }
 
     addTransaction(newTransaction)
       .then(() => {
